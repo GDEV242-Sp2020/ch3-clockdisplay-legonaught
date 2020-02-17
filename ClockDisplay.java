@@ -16,6 +16,7 @@ public class ClockDisplay
 {
     private NumberDisplay hours;
     private NumberDisplay minutes;
+    private String meridian = "PM";
     private String displayString;    // simulates the actual display
     
     /**
@@ -26,7 +27,7 @@ public class ClockDisplay
     {
         hours = new NumberDisplay(24);
         minutes = new NumberDisplay(60);
-        updateDisplay();
+        get24HourInternalDisplay();
     }
 
     /**
@@ -34,11 +35,12 @@ public class ClockDisplay
      * creates a new clock set at the time specified by the 
      * parameters.
      */
-    public ClockDisplay(int hour, int minute)
+    public ClockDisplay(int hour, int minute, String AMorPM)
     {
         hours = new NumberDisplay(24);
         minutes = new NumberDisplay(60);
-        setTime(hour, minute);
+        meridian = "AM";
+        setTime(hour, minute, AMorPM);
     }
 
     /**
@@ -51,18 +53,19 @@ public class ClockDisplay
         if(minutes.getValue() == 0) {  // it just rolled over!
             hours.increment();
         }
-        updateDisplay();
+        get24HourInternalDisplay();
     }
 
     /**
      * Set the time of the display to the specified hour and
      * minute.
      */
-    public void setTime(int hour, int minute)
+    public void setTime(int hour, int minute, String AMorPM)
     {
         hours.setValue(hour);
         minutes.setValue(minute);
-        updateDisplay();
+        meridian = AMorPM;
+        get24HourInternalDisplay();
     }
 
     /**
@@ -79,6 +82,25 @@ public class ClockDisplay
     private void updateDisplay()
     {
         displayString = hours.getDisplayValue() + ":" + 
-                        minutes.getDisplayValue();
+                        minutes.getDisplayValue() + " - " + meridian;
+    }
+    
+    private void get24HourInternalDisplay()
+    {
+        int holder = hours.getValue();
+        hours.setValue(holder % 12);
+        if(hours.getValue() == 0)
+        {
+            hours.setValue(12);
+            if(meridian == "AM")
+            {
+                meridian = "PM";
+            }
+            else
+            {
+                meridian = "AM";
+            }
+        }
+        updateDisplay();
     }
 }
