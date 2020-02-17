@@ -16,6 +16,7 @@ public class ClockDisplay
 {
     private NumberDisplay hours;
     private NumberDisplay minutes;
+    private String meridian;
     private String displayString;    // simulates the actual display
     
     /**
@@ -24,9 +25,10 @@ public class ClockDisplay
      */
     public ClockDisplay()
     {
-        hours = new NumberDisplay(24);
+        hours = new NumberDisplay(12);
         minutes = new NumberDisplay(60);
-        updateDisplay();
+        meridian = "PM";
+        get12HourInternalDisplay();
     }
 
     /**
@@ -34,11 +36,12 @@ public class ClockDisplay
      * creates a new clock set at the time specified by the 
      * parameters.
      */
-    public ClockDisplay(int hour, int minute)
+    public ClockDisplay(int hour, int minute, String AMorPM)
     {
-        hours = new NumberDisplay(24);
+        hours = new NumberDisplay(12);
         minutes = new NumberDisplay(60);
-        setTime(hour, minute);
+        meridian = AMorPM;
+        setTime(hour, minute, meridian);
     }
 
     /**
@@ -51,18 +54,19 @@ public class ClockDisplay
         if(minutes.getValue() == 0) {  // it just rolled over!
             hours.increment();
         }
-        updateDisplay();
+        get12HourInternalDisplay();
     }
 
     /**
      * Set the time of the display to the specified hour and
      * minute.
      */
-    public void setTime(int hour, int minute)
+    public void setTime(int hour, int minute, String AMorPM)
     {
         hours.setValue(hour);
         minutes.setValue(minute);
-        updateDisplay();
+        meridian = AMorPM;
+        get12HourInternalDisplay();
     }
 
     /**
@@ -79,6 +83,21 @@ public class ClockDisplay
     private void updateDisplay()
     {
         displayString = hours.getDisplayValue() + ":" + 
-                        minutes.getDisplayValue();
+                        minutes.getDisplayValue() + " - " + meridian;
+    }
+    
+    private void get12HourInternalDisplay()
+    {
+        if(hours.getValue() == 0) {
+            this.hours.setValue(12);
+            if(meridian == "AM") {
+                meridian = "PM";
+            }
+            else
+            {
+                meridian = "AM";
+            }
+        }
+        updateDisplay();
     }
 }
